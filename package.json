@@ -1,0 +1,15 @@
+{
+  "name": "nest-logger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "nest-logger.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nest-observe": "^0.1.0",
+    "winston": "^3.3.3"
+  }
+}
