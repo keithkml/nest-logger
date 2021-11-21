@@ -23,6 +23,8 @@ function handle(data) {
       humidity: t.current_humidity,
       targetTempType: t.target_temperature_type,
       targetTemp: cToF(t.target_temperature),
+      targetTempLow: cToF(t.target_temperature_low),
+      targetTempHigh: cToF(t.target_temperature_high),
       room: t.where_name,
       sensor: t.name,
     });
