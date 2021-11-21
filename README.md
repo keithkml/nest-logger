@@ -1,6 +1,13 @@
 # Nest Logger
 
-Logs structured information about your home's Nest thermostats to third-party logging services like Datadog.
+Logs structured information about your home's Nest thermostats to third-party logging services like Datadog. You can use this to:
+
+- Learn about your home's heating and cooling performance & patterns
+- Experiment with energy efficiency techniques
+
+You could also fork & extend it to control your heating & cooling appliances via the Nest API.
+
+<img width="1257" alt="Screen Shot 2021-11-21 at 3 02 07 PM" src="https://user-images.githubusercontent.com/7430512/142777093-838210d9-41c6-4230-ad67-73aba1435505.png">
 
 ## Getting Started
 1. Create a file called `auth.json` (see below)
