@@ -1,10 +1,11 @@
 const { createLogger, format, transports } = require("winston");
 
-export const newLogger = (datadogApiKey) =>
+const newLogger = (datadogApiKey) =>
   createLogger({
     level: "info",
     exitOnError: false,
     format: format.json(),
+    defaultMeta: { service: "nest-logger", instance: Math.random() },
     transports: [
       new transports.File({ filename: `logs/all.log` }),
       new transports.Http({
@@ -12,11 +13,9 @@ export const newLogger = (datadogApiKey) =>
         path: `/api/v2/logs?dd-api-key=${datadogApiKey}&ddsource=nodejs&service=nestlogger`,
         ssl: true,
       }),
+      // TODO: make console also log debug
+      new transports.Console(),
     ],
   });
 
-module.exports = logger;
-
-// Example logs
-logger.log("info", "Hello simple log!");
-logger.info("Hello log with metas", { color: "blue" });
+module.exports = { newLogger };

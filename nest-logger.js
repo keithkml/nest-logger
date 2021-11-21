@@ -1,29 +1,54 @@
-const { authGoogle, observe } = require("nest-observe");
+const Connection = require("./nest-connection");
 const fs = require("fs");
+const { newLogger } = require("./logging");
 
-const { nestRefreshToken } = require("./auth.json");
+const { nestRefreshToken, datadogApiKey } = require("./auth.json");
+const logger = newLogger(datadogApiKey);
+logger.info("starting up");
 
-async function go() {
-  // Use auth details to get JWT token. Returned object contains {token, expiry, refresh}
-  // where refresh is a function to get a new token object
-  const token = await authGoogle(nestRefreshToken);
-
-  // Create the observer. Can also be done using promises
-  const observer = await observe(token.token, {
-    protobuf: false, // set true to return protobuf object as value
-    debug: false, // set true to log a lot more
-  });
-
-  // Event emitted for new updates which include only the new values
-  observer.on("data", (state) => {
-    console.log("New state:", state);
-    fs.writeFileSync("state.json", JSON.stringify(state, null, 2));
-  });
-
-  // Event emitted when the streaming is stopped
-  observer.on("end", () => {
-    console.log("Streaming ended");
-  });
+const cToF = (celsius) => (celsius * 9) / 5 + 32;
+function handle(data) {
+  fs.writeFileSync("state.json", JSON.stringify(data, null, 2));
+  logger.info("got data");
+  for (const t of Object.values(data?.devices?.thermostats ?? {})) {
+    logger.info({
+      msgType: "thermostat",
+      mode: t.hvac_mode,
+      state: t.hvac_state,
+      heating: t.hvac_heater_state,
+      cooling: t.hvac_ac_state,
+      fan: t.hvac_fan_state,
+      fanMode: t.fan_mode_protobuf,
+      temp: cToF(t.current_temperature),
+      humidity: t.current_humidity,
+      targetTempType: t.target_temperature_type,
+      targetTemp: cToF(t.target_temperature),
+      room: t.where_name,
+      sensor: t.name,
+    });
+  }
+  for (const t of Object.values(data?.devices?.temp_sensors ?? [])) {
+    logger.info({
+      msgType: "sensor",
+      sensor: t.name,
+      temp: cToF(t.current_temperature),
+    });
+  }
+  for (const s of Object.values(data?.devices?.home_away_sensors ?? {})) {
+    logger.info({
+      msgType: "homeAway",
+      away: s.away == true,
+    });
+  }
 }
 
-go().then(console.log).catch(console.error);
+async function go() {
+  const conn = new Connection({ refreshToken: nestRefreshToken }, logger, true);
+  // Use auth details to get JWT token. Returned object contains {token, expiry, refresh}
+  // where refresh is a function to get a new token object
+  const token = await conn.auth();
+  logger.info("authed: " + token);
+  conn.observe(handle);
+}
+
+go().then(logger.info).catch(logger.error);
