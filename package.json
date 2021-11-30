@@ -5,6 +5,9 @@
   "main": "nest-logger.js",
   "author": "Keith Lea <keithl@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "node nest-logger.js"
+  },
   "dependencies": {
     "axios": "^0.24.0",
     "http2": "^3.3.7",

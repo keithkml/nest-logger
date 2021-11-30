@@ -2,7 +2,19 @@ const Connection = require("./nest-connection");
 const fs = require("fs");
 const { newLogger } = require("./logging");
 
-const { nestRefreshToken, datadogApiKey } = require("./auth.json");
+const AUTH_JSON_PATHS = [".", "/etc/secrets"];
+
+function loadAuthJson() {
+  for (const path of AUTH_JSON_PATHS) {
+    const filePath = path + "/auth.json";
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath));
+    }
+  }
+  throw new Error("could not find auth.json in " + AUTH_JSON_PATHS);
+}
+
+const { nestRefreshToken, datadogApiKey } = loadAuthJson();
 const logger = newLogger(datadogApiKey);
 logger.info("starting up");
 
