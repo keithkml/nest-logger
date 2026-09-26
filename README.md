@@ -20,8 +20,8 @@ That's it! You should see your home data in your logging service within a few mi
 Sample:
 ```json
 {
-    "nestRefreshToken": "1//jkasdfjasdfjasdf-adsfaskdfaksdf-5d-AB--jXjLuU0S8XjDjf",
-    "datadogApiKey": " 4f089ce1054244157e53d92760cec66"
+    "nestRefreshToken": "YOUR_NEST_REFRESH_TOKEN",
+    "datadogApiKey": "YOUR_DATADOG_API_KEY"
 }
 ```
 
